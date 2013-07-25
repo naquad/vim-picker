@@ -36,11 +36,11 @@ Features
 Screenshots
 ----------
 
-!(GUI chooser)[http://i.imgur.com/jRP7Nlyh.jpg "gui-chooser"]
+![GUI chooser](http://i.imgur.com/jRP7Nlyh.jpg "gui-chooser")
 
-!(CTERM chooser)[http://i.imgur.com/qdvBXhoh.jpg "256-color-chooser"]
+![CTERM chooser](http://i.imgur.com/qdvBXhoh.jpg "256-color-chooser")
 
-!(TERM chooser)[http://i.imgur.com/5FvegPZh.jpg "8-color-chooser"]
+![TERM chooser](http://i.imgur.com/5FvegPZh.jpg "8-color-chooser")
 
 Don't be afraid of that huge palette, you can still use color wheel. Its value will
 be used to find nearest color.
