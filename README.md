@@ -11,8 +11,8 @@ Each statement has 6 color parameters:
 * guibg - for gVIM text background color
 * ctermbg - text color for 256-colored terminal
 * ctermfg - text background color for 256-colored terminal
-* termfg - 8-color terminal text color
-* termbg - 8-color terminal background color
+* termfg - 16-color terminal text color
+* termbg - 16-color terminal background color
 
 And they all must look alike. Well, thats the plan at least.
 
@@ -36,11 +36,9 @@ Features
 Screenshots
 ----------
 
-![GUI chooser](http://i.imgur.com/jRP7Nlyh.jpg "gui-chooser")
+![CTERM chooser](http://i.imgur.com/8PFNRQTh.png "256-color-chooser")
 
-![CTERM chooser](http://i.imgur.com/qdvBXhoh.jpg "256-color-chooser")
-
-![TERM chooser](http://i.imgur.com/5FvegPZh.jpg "8-color-chooser")
+[More here](http://imgur.com/a/pLMnM)
 
 Don't be afraid of that huge palette, you can still use color wheel. Its value will
 be used to find nearest color.
