@@ -55,6 +55,18 @@ class PaletteColorDialog(gtk.Dialog):
 
         self.make_ui()
 
+    def set_color(self, color):
+        self.selector.set_previous_color(self.color.gtk)
+
+        if self.palette:
+            self.index, self.color = self.palette.approximate(color)
+            self.current.set_color(self.color.gtk)
+        else:
+            self.color = color
+
+        self.selector.set_current_color(self.color.gtk)
+        self.color_change(self.color, self.index, True)
+
     def on_visibility(self, me):
         rootwin = self.get_screen().get_root_window()
         x, y, mods = rootwin.get_pointer()
@@ -137,6 +149,8 @@ class PaletteColorDialog(gtk.Dialog):
 
 class PaletteColorButton(PaletteButton):
 
+    DD_TARGETS = [('picker-color-type-0xC0102', gtk.TARGET_SAME_APP, 0xC0102)]
+
     __gsignals__ = {
         'color-changed': (gobject.SIGNAL_RUN_LAST, None, (object, object))
     }
@@ -150,6 +164,40 @@ class PaletteColorButton(PaletteButton):
         self.set_color(self.dialog.color.gtk)
         self.set_size_request(30, 20)
         self.connect('clicked', self.show_dialog)
+
+        self.drag_source_set(
+            gtk.gdk.BUTTON1_MASK,
+            self.DD_TARGETS,
+            gtk.gdk.ACTION_COPY
+        )
+
+        self.connect('drag-motion', self.dd_motion)
+        self.connect('drag-drop', self.dd_drop)
+
+        self.drag_dest_set(
+            gtk.DEST_DEFAULT_ALL,
+            self.DD_TARGETS,
+            gtk.gdk.ACTION_COPY
+        )
+
+        self.connect('drag-data-received', self.dd_received)
+        self.connect('drag-data-get', self.dd_get)
+
+    def dd_motion(self, me, context, x, y, time):
+        context.drag_status(gtk.gdk.ACTION_COPY, time)
+        return True
+
+    def dd_drop(self, me, context, x, y, time):
+        context.finish(True, False, time)
+        return True
+
+    def dd_get(self, me, context, selection, tt, time):
+        selection.set(selection.target, 0xC0102, str(self.color))
+
+    def dd_received(self, me, context, x, y, sdata, info, time):
+        color = Color(sdata.data)
+        self.dialog.set_color(color)
+        self.set_color(self.dialog.color.gtk)
 
     @property
     def color(self):
