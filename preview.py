@@ -4,15 +4,21 @@ import pango
 class PreviewEntry(gtk.Entry):
     def __init__(self, text='Example Preview'):
         gtk.Entry.__init__(self)
+        self.text = text
         self.set_text(text)
         self.set_inner_border(gtk.Border(15, 15, 15, 15))
         self.set_alignment(0.5)
+        self.connect('focus-out-event', self.fill_if_empty)
 
         self.font = self.get_style().font_desc.copy()
         self.font.set_size(16 * pango.SCALE)
         self.bg_color = None
         self.fg_color = None
         self.change_style()
+
+    def fill_if_empty(self, me, evt):
+        if self.get_text().strip() == '':
+            self.set_text(self.text)
 
     def alloc_color(self, color):
         return self.get_colormap().alloc_color(color)
