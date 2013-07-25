@@ -48,6 +48,18 @@ Requirements
 
 Requires Python 2.7 and Gtk2 Python bindings.
 
+Usage
+-----
+
+```
+$ git clone https://github.com/naquad/vim-picker.git
+$ cd vim-picker
+$ ./picker.py
+```
+
+You may have to change first line of `picker.py` to make sure
+it points to right Python interpreter.
+
 Credits
 -------
 Thanks to [EasyRGB](http://www.easyrgb.com) for CIEDE2000 implementation. 
