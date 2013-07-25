@@ -90,7 +90,7 @@ class Picker(gtk.Window):
         last_row += 1
 
         container.attach(
-            self.make_label("<i>Hint: you can drag &amp; drop color buttons. Their colors be approximized as needed.</i>", 0.5, True),
+            self.make_label("<i>Hint: you can drag &amp; drop color buttons. Their colors will be approximized as needed.</i>", 0.5, True),
             0, 3,
             last_row,
             last_row + 1,

@@ -20,17 +20,17 @@ The problem is that you should not just make up your color scheme,
 but also code it, test it and make all types of terminals look alike.
 This is daunting. Very daunting.
 
-Recently I've been trying to do that and came to conclusion that I'm doing it wrong
-and made this project.
+Recently I've been trying to do that and came to conclusion that I'm doing it wrong.
+This little script tries to solve the problem.
 
 Features
 --------
 
 * Implements [CIEDE2000](http://en.wikipedia.org/wiki/Color_difference#CIEDE2000) algorithm
   for automatically matching your colors (especially useful for 256-GUI hex matching).
-* Nicely previews of result.
+* Nicely previews result.
 * Generates `hl` like so you won't have to type colors yourself. 
-* Drag and drop colors around. After you've chosen one color you can just drag & drop it to others.
+* Drag and drop colors around. After you've chosen one color you can just drag & drop it to other holders.
   Color will be approximated as needed.
 
 Screenshots
@@ -57,7 +57,7 @@ $ cd vim-picker
 $ ./picker.py
 ```
 
-You may have to change first line of `picker.py` to make sure
+You may have to change first line of `picker.py` (shebang) to make sure
 it points to right Python interpreter.
 
 Credits
