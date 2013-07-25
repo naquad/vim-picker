@@ -66,7 +66,6 @@ class PaletteColorDialog(gtk.Dialog):
 
         self.selector = gtk.ColorSelection()
         self.selector.set_has_opacity_control(False)
-        self.selector.set_current_color(self.color.gtk)
         self.selector.connect('color-changed', self.selector_color)
 
         container.pack_start(self.selector)
@@ -132,6 +131,7 @@ class PaletteColorDialog(gtk.Dialog):
             self.index = self.new_index
             self.color = self.new_color
             self.selector.set_previous_color(self.color.gtk)
+            self.selector.set_current_color(self.color.gtk)
 
         self.color_change(self.color, self.index, True)
 
