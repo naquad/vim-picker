@@ -3,7 +3,6 @@ from palettes import CTERM_COLORS, TERM_COLORS
 from color import Color, Palette
 from paletteui import PaletteColorButton
 from preview import PreviewEntry
-from cgi import escape
 
 class Picker(gtk.Window):
 
@@ -26,21 +25,21 @@ class Picker(gtk.Window):
         icon = self.render_icon(gtk.STOCK_COLOR_PICKER, gtk.ICON_SIZE_MENU)
         self.set_icon(icon)
 
-        self.set_size_request(650, -1)
+        self.set_size_request(670, -1)
         self.set_resizable(False)
         self.set_border_width(10)
 
         self.make_ui()
 
-    def make_label(self, text, alignment=0, bold=False):
+    def make_label(self, text, alignment=0, markup=False):
         label = gtk.Label()
+        label.set_alignment(alignment, 0.5)
 
-        if bold:
-            label.set_markup('<b>%s</b>' % escape(text))
+        if markup:
+            label.set_markup(text)
         else:
             label.set_text(text)
 
-        label.set_alignment(alignment, 0.5)
         return label
 
     def make_ui(self):
@@ -62,8 +61,8 @@ class Picker(gtk.Window):
             fg_button.connect('color-changed', self.fg_changed, preview)
             bg_button.connect('color-changed', self.bg_changed, preview)
 
-            container.attach(fg_button, 1, 2, row, row + 1, 0, gtk.FILL)
-            container.attach(bg_button, 1, 2, row + 1, row + 2, 0, gtk.FILL)
+            container.attach(fg_button, 1, 2, row, row + 1, 0, gtk.FILL, 5)
+            container.attach(bg_button, 1, 2, row + 1, row + 2, 0, gtk.FILL, 5)
             container.attach(preview, 2, 3, row, row + 2)
             container.set_row_spacing(row + 1, 15)
 
@@ -71,7 +70,7 @@ class Picker(gtk.Window):
 
         last_row = len(container)
 
-        container.attach(self.make_label('Result:', 0.5, True), 0, 3, last_row, last_row + 1)
+        container.attach(self.make_label('<b>Result:</b>', 0.5, True), 0, 3, last_row, last_row + 1)
         last_row += 1
 
         self.result = gtk.Entry()
@@ -83,7 +82,7 @@ class Picker(gtk.Window):
         last_row += 1
 
         container.attach(
-            self.make_label("Hint: you can drag & drop colors. They'll be approximized as needed.", 0.5, True),
+            self.make_label("<i>Hint: you can drag &amp; drop color buttons. Their colors be approximized as needed.</i>", 0.5, True),
             0, 3,
             last_row,
             last_row + 1,
