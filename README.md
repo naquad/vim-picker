@@ -43,6 +43,11 @@ Screenshots
 Don't be afraid of that huge palette, you can still use color wheel. Its value will
 be used to find nearest color.
 
+Requirements
+------------
+
+Requires Python 2.7 and Gtk2 Python bindings.
+
 Credits
 -------
 Thanks to [EasyRGB](http://www.easyrgb.com) for CIEDE2000 implementation. 
