@@ -15,7 +15,7 @@ class Picker(gtk.Window):
     def __init__(self):
         gtk.Window.__init__(self)
 
-        self.set_title('Color Picker')
+        self.set_title('VIM Color Picker')
 
         self.default_bg = Color('#eeeeee')
         self.default_fg = Color('#000000')
