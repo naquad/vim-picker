@@ -1,3 +1,6 @@
+"""
+Main window implementation.
+"""
 import gtk
 from palettes import CTERM_COLORS, TERM_COLORS
 from color import Color, Palette
@@ -48,15 +51,18 @@ class Picker(gtk.Window):
         for index, group in enumerate(self.CONTROLS):
             row = index * 2
 
-            container.attach(self.make_label('%s FG' % group[0]), 0, 1, row, row + 1, gtk.FILL, 0, 10)
-            container.attach(self.make_label('%s BG' % group[0]), 0, 1, row + 1, row + 2, gtk.FILL, 0, 10)
+            fg_label = '%s FG' % group[0]
+            bg_label = '%s BG' % group[0]
+
+            container.attach(self.make_label(fg_label), 0, 1, row, row + 1, gtk.FILL, 0, 10)
+            container.attach(self.make_label(bg_label), 0, 1, row + 1, row + 2, gtk.FILL, 0, 10)
 
             preview = PreviewEntry()
             preview.set_bg_color(self.default_bg.gtk)
             preview.set_fg_color(self.default_fg.gtk)
 
-            fg_button = PaletteColorButton(group[1], self.default_fg)
-            bg_button = PaletteColorButton(group[1], self.default_bg)
+            fg_button = PaletteColorButton(group[1], self.default_fg, 'Choose %s' % fg_label)
+            bg_button = PaletteColorButton(group[1], self.default_bg, 'Choose %s' % bg_label)
 
             fg_button.connect('color-changed', self.fg_changed, preview)
             bg_button.connect('color-changed', self.bg_changed, preview)

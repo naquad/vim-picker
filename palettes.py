@@ -1,3 +1,7 @@
+"""
+Taken from http://www.calmar.ws/vim/256-xterm-24bit-rgb-color-chart.html
+"""
+
 TERM_COLORS = [
     '#000000', '#800000', '#008000', '#808000', '#000080', '#800080', '#008080', '#c0c0c0',
     '#808080', '#ff0000', '#00ff00', '#ffff00', '#0000ff', '#ff00ff', '#00ffff', '#ffffff',

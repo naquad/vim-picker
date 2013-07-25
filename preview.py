@@ -1,3 +1,6 @@
+"""
+Slightly modified GtkEntry for previewing text.
+"""
 import gtk
 import pango
 

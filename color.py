@@ -1,3 +1,6 @@
+"""
+Color wrapper and palette implementation.
+"""
 import gtk
 from colorop import rgb_to_xyz, xyz_to_laab, color_diff_laab
 
@@ -7,8 +10,10 @@ class Color:
             self.gtk = gtk.gdk.color_parse(string)
         elif isinstance(string, gtk.gdk.Color):
             self.gtk = string
-        self.xyz = rgb_to_xyz(self.gtk.red / 256, self.gtk.green / 256, self.gtk.blue / 256)
-        self.laab = xyz_to_laab(*self.xyz)
+
+        # because CIEDE2000 works with L*ab to save some CPU time
+        # L*ab version of color is stored too
+        self.laab = xyz_to_laab(*rgb_to_xyz(self.red, self.green, self.blue))
 
     def __rsub__(self, other):
         return color_diff_laab(self.laab, other.laab)

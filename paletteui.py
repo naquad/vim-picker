@@ -1,3 +1,7 @@
+"""
+Implementation of own ColorButton and ColorSelectionDialog
+for working with palette (approximation, indexing, etc...)
+"""
 import gtk
 import gobject
 from math import ceil
@@ -52,6 +56,7 @@ class PaletteColorDialog(gtk.Dialog):
 
         self.connect('response', self.on_response)
         self.connect('realize', self.on_visibility)
+        self.connect('show', self.on_visibility)
 
         self.make_ui()
 

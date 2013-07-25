@@ -1,3 +1,9 @@
+"""
+Color operations.
+RGB -> XYZ -> L*ab
++ CIEDE2000 itself.
+All credits go to http://easyrgb.com
+"""
 import math
 
 REF_X = 95.047
