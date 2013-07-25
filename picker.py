@@ -1,3 +1,4 @@
+#!/usr/bin/python2
 """
 Main window implementation.
 """
