@@ -6,6 +6,7 @@ import gtk
 import gobject
 from math import ceil
 from color import Color
+from colorop import opposite_rgb
 
 class PaletteButton(gtk.Button):
 
@@ -14,7 +15,36 @@ class PaletteButton(gtk.Button):
         if color is not None:
             self.set_color(color)
 
+        self.active = False
+        self.set_border_width(2)
+        self.connect('expose-event', self.expose)
+
+    def expose(self, widget, evt):
+        if self.active:
+            cr = self.window.cairo_create()
+            cr.set_line_width(3)
+            cr.set_source_rgb(*self.complement)
+
+            w = self.allocation.width
+            h = self.allocation.height
+            cr.rectangle(self.allocation.x, self.allocation.y, w, h)
+            cr.clip_preserve()
+            cr.close_path()
+            cr.stroke()
+
+        return False
+
+    def set_active(self, active):
+        self.active = active
+        self.queue_draw()
+
     def set_color(self, color):
+        self.complement = opposite_rgb(
+            255 - color.red / 256,
+            255 - color.green / 256,
+            255 - color.blue / 256
+        )
+
         for state in [gtk.STATE_NORMAL, gtk.STATE_ACTIVE, gtk.STATE_PRELIGHT, gtk.STATE_SELECTED, gtk.STATE_INSENSITIVE]:
             self.modify_bg(state, color)
 
@@ -60,18 +90,6 @@ class PaletteColorDialog(gtk.Dialog):
 
         self.make_ui()
 
-    def set_color(self, color):
-        self.selector.set_previous_color(self.color.gtk)
-
-        if self.palette:
-            self.index, self.color = self.palette.approximate(color)
-            self.current.set_color(self.color.gtk)
-        else:
-            self.color = color
-
-        self.selector.set_current_color(self.color.gtk)
-        self.color_change(self.color, self.index, True)
-
     def on_visibility(self, me):
         rootwin = self.get_screen().get_root_window()
         x, y, mods = rootwin.get_pointer()
@@ -89,17 +107,31 @@ class PaletteColorDialog(gtk.Dialog):
 
         if self.palette:
             container.pack_start(self.make_grid())
+
             label = gtk.Label()
             label.set_markup('<b>Currently selected (with approximation to palette):</b>')
             container.pack_start(label)
+
+            hbox = gtk.HBox()
+
             self.current = self.make_button(self.color.gtk)
-            container.pack_start(self.current)
+            hbox.pack_start(self.current)
+
+            self.current_index = gtk.Entry()
+            self.current_index.set_text(str(self.index))
+            self.current_index.connect('focus-out-event', self.current_index_change)
+            self.current_index.connect('key-press-event', self.catch_enter)
+            hbox.pack_start(self.current_index, False, 10)
+
+            container.pack_start(hbox)
         else:
             self.current = None
 
         container.show_all()
 
     def make_grid(self):
+        self.buttons = []
+
         rows = int(ceil(len(self.palette) / float(self.COLS)))
         grid = gtk.Table(rows, self.COLS)
         row, col = 0, 0
@@ -107,11 +139,13 @@ class PaletteColorDialog(gtk.Dialog):
             btn = self.make_button(color.gtk)
             btn.connect('clicked', self.palette_color, index)
             grid.attach(btn, col, col + 1, row, row + 1)
+            self.buttons.append(btn)
             col += 1
             if col > self.COLS:
                 row += 1
                 col = 0
 
+        self.buttons[self.index].set_active(True)
         return grid
 
     def make_button(self, color):
@@ -119,38 +153,70 @@ class PaletteColorDialog(gtk.Dialog):
         btn.set_size_request(20, 20)
         return btn
 
-    def selector_color(self, selector):
-        new_color = Color(selector.get_current_color())
+    def catch_enter(self, entry, evt):
+        if evt.keyval == gtk.keysyms.Return or evt.keyval == gtk.keysyms.KP_Enter:
+            self.current_index_change(None, None)
 
-        if self.palette:
-            i, c = self.palette.approximate(new_color)
-            self.current.set_color(c.gtk)
-            self.color_change(c, i)
-        else:
-            self.color_change(new_color)
+    def current_index_change(self, entry, evt):
+        index = self.current_index.get_text()
+
+        valid = index.isdigit()
+        if valid:
+            index = int(index)
+            valid = index > 0 and index < len(self.palette)
+
+            if valid and self.new_index != index:
+                self.sync_selectors(index=index)
+
+        if not valid:
+            self.current_index.set_text(str(self.new_index or self.index))
+
+    def selector_color(self, selector):
+        self.sync_selectors(from_selector=True)
 
     def palette_color(self, btn, color_index):
-        color = self.palette[color_index]
-        self.selector.set_current_color(color.gtk)
-        self.current.set_color(color.gtk)
-        self.color_change(color, color_index)
+        self.sync_selectors(index=color_index)
 
-    def color_change(self, color, index=None, final=False):
-        if color == self.new_color and not final:
-            return
+    def set_color(self, color):
+        self.sync_selectors(color, final=True)
 
-        self.new_index = index
+    def sync_selectors(self, color=None, index=None, final=False, from_selector=False):
+        if color is None and index is None:
+            color = Color(self.selector.get_current_color())
+
+        if color is None and index is not None:
+            color = self.palette[index]
+
+        if color is not None and index is None and self.palette is not None:
+            index, color = self.palette.approximate(color)
+
+        emit = self.new_color != color or final
+
         self.new_color = color
-        self.emit('color-changed', color, index)
+        if not from_selector:
+            self.selector.set_current_color(color.gtk)
+
+        if index is not None:
+            if self.new_index:
+                self.buttons[self.new_index].set_active(False)
+            if self.index is not None:
+                self.buttons[self.index].set_active(False)
+            self.new_index = index
+            self.buttons[self.new_index].set_active(True)
+            self.current_index.set_text(str(self.new_index))
+            self.current.set_color(self.new_color.gtk)
+
+        if final:
+            self.color = self.new_color
+            self.index = self.new_index
+            self.selector.set_previous_color(self.color.gtk)
+
+        if emit:
+            self.emit('color-changed', self.new_color, self.new_index)
 
     def on_response(self, dlg, rid):
         if rid == gtk.RESPONSE_ACCEPT:
-            self.index = self.new_index
-            self.color = self.new_color
-            self.selector.set_previous_color(self.color.gtk)
-            self.selector.set_current_color(self.color.gtk)
-
-        self.color_change(self.color, self.index, True)
+            self.sync_selectors(None, None, True)
 
 class PaletteColorButton(PaletteButton):
 
@@ -169,6 +235,7 @@ class PaletteColorButton(PaletteButton):
         self.set_color(self.dialog.color.gtk)
         self.set_size_request(30, 20)
         self.connect('clicked', self.show_dialog)
+        self.set_border_width(0)
 
         self.drag_source_set(
             gtk.gdk.BUTTON1_MASK,

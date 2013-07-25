@@ -27,6 +27,7 @@ class Picker(gtk.Window):
 
         icon = self.render_icon(gtk.STOCK_COLOR_PICKER, gtk.ICON_SIZE_MENU)
         self.set_icon(icon)
+        gtk.window_set_default_icon(icon)
 
         self.set_size_request(670, -1)
         self.set_resizable(False)

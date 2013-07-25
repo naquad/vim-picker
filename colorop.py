@@ -57,6 +57,7 @@ def xyz_to_laab(x, y, z):
     )
 
 def cie_lab_2hue(a, b):
+    """Color difference helper"""
     bias = 0
 
     if a >= 0 and b == 0:
@@ -157,3 +158,72 @@ def color_diff_laab(c1, c2, whtl=1, whtc=1, whth=1):
     xDH = xDH / (whth * xSH)
 
     return math.sqrt(math.pow(xDL, 2) + math.pow(xDC, 2) + math.pow(xDH, 2) + xRT * xDC * xDH)
+
+def rgb_to_hsl(r, g, b):
+    r, g, b = r / 255.0, g / 255.0, b / 255.0
+
+    minc = min(r, g, b)
+    maxc = max(r, g, b)
+    d = maxc - minc
+
+    if d == 0:
+        h = 0
+    elif maxc == r:
+        h = ((g - b) / d) % 6
+    elif maxc == g:
+        h = (b - r) / d + 2
+    else:
+        h = (r - g) / d + 4
+
+    h *= (1 / 3.0)
+    if h < 0:
+        h += 1
+
+    l = (maxc + minc) / 2.0
+
+    if d == 0:
+        s = 0
+    else:
+        s = d / (1 - abs(2 * l - 1))
+
+    return (h, s, l)
+
+def hsl_to_rgb(h, s, l):
+    c = (1 - abs(2 * l - 1)) * s
+
+    hh = h * (1 / 3.0)
+
+    x = c * (1 - abs(hh % 2 - 1))
+    r, g, b = 0, 0, 0
+
+    if hh >= 0 and hh < 1:
+        r, g = c, x
+    elif hh >= 1 and hh < 2:
+        r, g = x, c
+    elif hh >= 2 and hh < 3:
+        g, b = c, x
+    elif hh >= 3 and hh < 4:
+        g, b = x, c
+    elif hh >= 4 and hh < 5:
+        r, b = x, c
+    else:
+        r, b = c, x
+
+    m = l - c / 2.0
+
+    return (
+        int(math.ceil((r + m) * 255)),
+        int(math.ceil((g + m) * 255)),
+        int(math.ceil((b + m) * 255))
+    )
+
+def opposite_hsl(h, s, l):
+    h += 0.5
+    if h > 1:
+        h -= 1
+
+    return h, s, l
+
+def opposite_rgb(r, g, b):
+    """Simple opposite color calculation"""
+    return hsl_to_rgb(*opposite_hsl(*rgb_to_hsl(r, g, b)))

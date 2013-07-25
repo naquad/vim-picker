@@ -66,13 +66,12 @@ class Palette(list):
         super(Palette, self).__init__(map(Color.parse, colors))
 
     def approximate(self, target):
-        matched_color = self[0]
         matched_index = 0
         matched_diff = 10000
 
-        for index, color in enumerate(self):
-            diff = color - target
+        for index, color in enumerate(self):  # up to 256 elements in self
+            diff = color - target  # super heavy
             if matched_diff > diff:
-                matched_diff, matched_color, matched_index = diff, color, index
+                matched_diff, matched_index = diff, index
 
-        return matched_index, matched_color
+        return matched_index, self[matched_index]
