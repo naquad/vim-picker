@@ -32,13 +32,14 @@ Features
 * Generates `hl` like so you won't have to type colors yourself. 
 * Drag and drop colors around. After you've chosen one color you can just drag & drop it to other holders.
   Color will be approximated as needed.
+* Can parse lines and understands named colors.
 
 Screenshots
 ----------
 
-![CTERM chooser](http://i.imgur.com/8PFNRQTh.png "256-color-chooser")
+![CTERM chooser](http://i.imgur.com/yLsQda8h.png "256-color-chooser")
 
-[More here](http://imgur.com/a/pLMnM)
+[More here](http://imgur.com/a/S2KLW)
 
 Don't be afraid of that huge palette, you can still use color wheel. Its value will
 be used to find nearest color.
