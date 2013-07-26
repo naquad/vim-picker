@@ -29,7 +29,7 @@ Features
 * Implements [CIEDE2000](http://en.wikipedia.org/wiki/Color_difference#CIEDE2000) algorithm
   for automatically matching your colors (especially useful for 256-GUI hex matching).
 * Nicely previews result.
-* Generates `hl` like so you won't have to type colors yourself. 
+* Generates `hl` line so you won't have to type colors yourself. 
 * Drag and drop colors around. After you've chosen one color you can just drag & drop it to other holders.
   Color will be approximated as needed.
 * Can parse lines and understands named colors.
