@@ -180,6 +180,9 @@ class PaletteColorDialog(gtk.Dialog):
     def set_color(self, color):
         self.sync_selectors(color, final=True)
 
+    def set_index(self, index):
+        self.sync_selectors(index=index, final=True)
+
     def sync_selectors(self, color=None, index=None, final=False, from_selector=False):
         if color is None and index is None:
             color = Color(self.selector.get_current_color())
@@ -187,7 +190,10 @@ class PaletteColorDialog(gtk.Dialog):
         if color is None and index is not None:
             color = self.palette[index]
 
-        if color is not None and index is None and self.palette is not None:
+        if not isinstance(color, Color):
+            color = Color(color)
+
+        if index is None and self.palette is not None:
             index, color = self.palette.approximate(color)
 
         emit = self.new_color != color or final
@@ -227,14 +233,14 @@ class PaletteColorButton(PaletteButton):
     }
 
     def __init__(self, palette, color=None, title=None):
-        super(PaletteColorButton, self).__init__(color and color.gtk)
+        super(PaletteColorButton, self).__init__()
         self.dialog = PaletteColorDialog(palette, color, title, flags=gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
         self.dialog.connect('color-changed', self.color_changed)
         self.dialog.connect('delete-event', self.hide_dialog)
         self.dialog.connect('response', self.hide_dialog)
-        self.set_color(self.dialog.color.gtk)
         self.set_size_request(30, 20)
         self.connect('clicked', self.show_dialog)
+        self._set_btn_color(self.color.gtk)
         self.set_border_width(0)
 
         self.drag_source_set(
@@ -267,9 +273,19 @@ class PaletteColorButton(PaletteButton):
         selection.set(selection.target, 0xC0102, str(self.color))
 
     def dd_received(self, me, context, x, y, sdata, info, time):
-        color = Color(sdata.data)
+        self.dialog.set_color(sdata.data)
+        self._set_btn_color(self.dialog.color.gtk)
+
+    def _set_btn_color(self, color):
+        super(PaletteColorButton, self).set_color(color)
+
+    def set_color(self, color):
         self.dialog.set_color(color)
-        self.set_color(self.dialog.color.gtk)
+        self.set_color(self.color.gtk)
+
+    def set_index(self, index):
+        self.dialog.set_index(index)
+        self._set_btn_color(self.color.gtk)
 
     @property
     def color(self):
@@ -284,7 +300,7 @@ class PaletteColorButton(PaletteButton):
 
     def hide_dialog(self, dlg, evt):
         self.dialog.hide()
-        self.set_color(self.dialog.color.gtk)
+        self._set_btn_color(self.color.gtk)
         return True
 
     def color_changed(self, dlg, color, index):
